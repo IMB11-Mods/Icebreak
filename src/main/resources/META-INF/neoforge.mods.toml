@@ -1,0 +1,43 @@
+issueTrackerURL="https://github.com/IMB11-Mods/Icebreak/issues"
+displayURL="https://modrinth.com/mod/icebreak"
+logoFile="assets/icebreak/icon.png"
+iconFile="assets/icebreak/icon.png"
+authors="IMB11, cassiancc"
+license="ARR"
+
+[[mods]]
+modId="icebreak"
+version="${version}"
+displayName="Icebreak"
+description="What did you expect to happen when you jump on ice?"
+mru = "dev.imb11.icebreak.Icebreak"
+
+[[dependencies.icebreak]]
+modId="neoforge"
+type="required"
+versionRange="[26.1, )"
+ordering="NONE"
+side="CLIENT"
+
+[[dependencies.icebreak]]
+modId = "yet_another_config_lib_v3"
+type = "required"
+versionRange="*"
+side="CLIENT"
+
+[[dependencies.icebreak]]
+modId="minecraft"
+type="required"
+versionRange="[26.1, )"
+ordering="NONE"
+side="CLIENT"
+
+[[dependencies.icebreak]]
+modId="mru"
+type="required"
+versionRange="[1.0.40,)"
+ordering="NONE"
+side="CLIENT"
+
+[[mixins]]
+config="icebreak.mixins.json"

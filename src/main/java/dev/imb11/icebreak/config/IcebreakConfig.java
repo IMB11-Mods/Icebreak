@@ -1,19 +1,17 @@
 package dev.imb11.icebreak.config;
 
+import cc.cassian.mru.Platform;
 import com.google.gson.GsonBuilder;
-import dev.imb11.icebreak.Icebreak;
 import dev.isxander.yacl3.api.ConfigCategory;
 import dev.isxander.yacl3.api.Option;
 import dev.isxander.yacl3.api.OptionDescription;
 import dev.isxander.yacl3.api.YetAnotherConfigLib;
 import dev.isxander.yacl3.api.controller.FloatSliderControllerBuilder;
 import dev.isxander.yacl3.api.controller.IntegerSliderControllerBuilder;
-import dev.isxander.yacl3.api.controller.ValueFormatter;
 import dev.isxander.yacl3.config.v2.api.ConfigClassHandler;
 import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
 import dev.isxander.yacl3.gui.ValueFormatters;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
@@ -23,7 +21,7 @@ public class IcebreakConfig {
             .id(Identifier.fromNamespaceAndPath("icebreak", "config"))
             .serializer(config -> GsonConfigSerializerBuilder
                     .create(config)
-                    .setPath(FabricLoader.getInstance().getConfigDir().resolve("icebreak.config.json"))
+                    .setPath(Platform.INSTANCE.configPath().resolve("icebreak.config.json"))
                     .appendGsonBuilder(GsonBuilder::setPrettyPrinting).build())
             .build();
 

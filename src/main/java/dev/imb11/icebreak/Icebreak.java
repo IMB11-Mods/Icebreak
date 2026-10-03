@@ -1,7 +1,7 @@
 package dev.imb11.icebreak;
 
+import cc.cassian.mru.events.CommonRegisterEvent;
 import dev.imb11.icebreak.config.IcebreakConfig;
-import net.fabricmc.api.ModInitializer;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-public class Icebreak implements ModInitializer {
+public class Icebreak implements CommonRegisterEvent {
     public static final String MOD_ID = "icebreak";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 

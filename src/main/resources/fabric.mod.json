@@ -17,7 +17,7 @@
   "icon": "assets/icebreak/icon.png",
   "environment": "*",
   "entrypoints": {
-    "main": [
+    "mru": [
       "dev.imb11.icebreak.Icebreak"
     ],
     "modmenu": [
@@ -29,7 +29,8 @@
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "fabric-api": "*",
-    "minecraft": "${minecraft_version}"
+    "mru": ">=1.0.40",
+    "yet_another_config_lib_v3": "*",
+    "minecraft": ">=26.1 <27"
   }
 }
