@@ -35,65 +35,68 @@ public class Icebreak implements CommonRegisterEvent {
             return;
         }
 
-        if (entity instanceof LivingEntity livingEntity && level instanceof ServerLevel serverLevel) {
-            int strength = 1;
-            if (fallDistance > 1 && fallDistance <= 2) {
-                strength = 2;
-            } else if (fallDistance > 2 && fallDistance <= 3) {
-                strength = 3;
-            } else if (fallDistance > 3) {
-                strength = 4;
-            }
-
-            // Higher strength = higher chance
-            double chanceOfCracking = config.initialCrackChance + (fallDistance * config.fallDistanceMultiplier);
-            if (serverLevel.getRandom().nextFloat() < chanceOfCracking) {
-                int initialRadius = config.holeRadius;
-                int lightningLength = strength + config.crackExpansionAmount;
-
-                serverLevel.getServer().execute(() -> {
-                    CompletableFuture.runAsync(() -> {
-                        Set<BlockPos> initialCracked = new HashSet<>();
-                        Queue<PositionWithDistance> queue = new LinkedList<>();
-                        queue.add(new PositionWithDistance(blockPos, 0));
-                        initialCracked.add(blockPos);
-
-                        while (!queue.isEmpty()) {
-                            PositionWithDistance entry = queue.poll();
-                            BlockPos currentPos = entry.pos();
-                            int dist = entry.distance();
-
-                            if (serverLevel.getBlockState(currentPos).is(BlockTags.ICE)) {
-                                serverLevel.destroyBlock(currentPos, false);
-                                try {
-                                    Thread.sleep(config.blockBreakDelay); // Slow down the cracking effect
-                                } catch (InterruptedException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-
-                            if (dist < initialRadius) {
-                                for (BlockPos neighbor : List.of(
-                                        currentPos.north(), currentPos.south(), currentPos.east(), currentPos.west(), currentPos.above(), currentPos.below())) {
-                                    if (!initialCracked.contains(neighbor) && serverLevel.getBlockState(neighbor).is(BlockTags.ICE)) { // Check if it's ice!
-                                        initialCracked.add(neighbor);
-                                        queue.add(new PositionWithDistance(neighbor, dist + 1));
-                                    }
-                                }
-                            }
-                        }
-
-                        Set<BlockPos> allCracked = new HashSet<>(initialCracked);
-                        for (BlockPos startPos : initialCracked) {
-                            generateLightningBranch(config, serverLevel, startPos, lightningLength, allCracked);
-                        }
-                    });
-                });
-            }
+        if (!(entity instanceof LivingEntity livingEntity)) {
+            return;
         }
 
-        if (entity instanceof LivingEntity livingEntity && level instanceof ClientLevel clientLevel) {
-            clientLevel.playSound(livingEntity, blockPos, ICE_STRESS, SoundSource.BLOCKS, 1.0f, 1.0f);
+        if (level.isClientSide()) {
+            level.playSound(livingEntity, blockPos, ICE_STRESS, SoundSource.BLOCKS, 1.0f, 1.0f);
+            return;
+        }
+
+        int strength = 1;
+        if (fallDistance > 1 && fallDistance <= 2) {
+            strength = 2;
+        } else if (fallDistance > 2 && fallDistance <= 3) {
+            strength = 3;
+        } else if (fallDistance > 3) {
+            strength = 4;
+        }
+
+        // Higher strength = higher chance
+        double chanceOfCracking = config.initialCrackChance + (fallDistance * config.fallDistanceMultiplier);
+        if (serverLevel.getRandom().nextFloat() < chanceOfCracking) {
+            int initialRadius = config.holeRadius;
+            int lightningLength = strength + config.crackExpansionAmount;
+
+            serverLevel.getServer().execute(() -> {
+                CompletableFuture.runAsync(() -> {
+                    Set<BlockPos> initialCracked = new HashSet<>();
+                    Queue<PositionWithDistance> queue = new LinkedList<>();
+                    queue.add(new PositionWithDistance(blockPos, 0));
+                    initialCracked.add(blockPos);
+
+                    while (!queue.isEmpty()) {
+                        PositionWithDistance entry = queue.poll();
+                        BlockPos currentPos = entry.pos();
+                        int dist = entry.distance();
+
+                        if (serverLevel.getBlockState(currentPos).is(BlockTags.ICE)) {
+                            serverLevel.destroyBlock(currentPos, false);
+                            try {
+                                Thread.sleep(config.blockBreakDelay); // Slow down the cracking effect
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+
+                        if (dist < initialRadius) {
+                            for (BlockPos neighbor : List.of(
+                                    currentPos.north(), currentPos.south(), currentPos.east(), currentPos.west(), currentPos.above(), currentPos.below())) {
+                                if (!initialCracked.contains(neighbor) && serverLevel.getBlockState(neighbor).is(BlockTags.ICE)) { // Check if it's ice!
+                                    initialCracked.add(neighbor);
+                                    queue.add(new PositionWithDistance(neighbor, dist + 1));
+                                }
+                            }
+                        }
+                    }
+
+                    Set<BlockPos> allCracked = new HashSet<>(initialCracked);
+                    for (BlockPos startPos : initialCracked) {
+                        generateLightningBranch(config, serverLevel, startPos, lightningLength, allCracked);
+                    }
+                });
+            });
         }
     }
 
